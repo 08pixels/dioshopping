@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Paper, Grid, Typography, List, makeStyles } from '@material-ui/core/';
 import Item from '../components/Item';
@@ -16,6 +16,8 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 const HomePage = () => {
+
+    const [categoryFilter, setCategoryFilter] = useState('');
     const products = useSelector(state => state.products)
     const classes = useStyles();
 
@@ -49,17 +51,23 @@ const HomePage = () => {
             <Grid item xs={3}>
                 <Paper className={classes.paper}>
                     <Typography variant='h5'>
-                        Categorias
+                        <span
+                            title='mostrar todas as categorias'
+                            onClick={() => {setCategoryFilter('')}}>
+                                Categorias
+                        </span>
                     </Typography>
                     <List>
                         {category.map(
                             category => {
                                 return (
-                                    <Item
-                                        key = {category.id} 
-                                        name= {category.name}
-                                        details={count[category.name]}
-                                    />
+                                    <div style={{cursor: 'pointer'}} onClick={() => {setCategoryFilter(category.name)}}>
+                                        <Item
+                                            key = {category.id} 
+                                            name= {category.name}
+                                            details={count[category.name]}
+                                        />
+                                    </div>
                                 )
                             }
                         )}
@@ -69,12 +77,11 @@ const HomePage = () => {
             <Grid container xs={9} spacing={3} className={classes.root}>
                 {products.map(item => {
                     return(
-                        <Card
-                            key={item.id_product}
-                            product={item}
-                        >
-                            {item.name_product}
-                        </Card>
+                        (categoryFilter === '' || (item.name_categorys.toLowerCase() === categoryFilter.toLowerCase()))
+                            ?  <Card key={item.id_product} product={item} >
+                                    {item.name_product}
+                                </Card>
+                            : <></>
                     )
                 })}
             </Grid>
